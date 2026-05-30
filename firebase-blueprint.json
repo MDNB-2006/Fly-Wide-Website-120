@@ -1,0 +1,52 @@
+{
+  "entities": {
+    "User": {
+      "title": "User Profile",
+      "description": "Information about registered website customers",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "The unique user ID from Firebase Auth" },
+        "fullName": { "type": "string", "description": "User's full name" },
+        "email": { "type": "string", "format": "email", "description": "User's email address" },
+        "passportNumber": { "type": "string", "description": "Passport number for travel" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "When the profile was created" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "When the profile was last updated" }
+      },
+      "required": ["uid", "fullName", "email"]
+    },
+    "Booking": {
+      "title": "Customer Booking",
+      "description": "Details about tour bookings made by customers",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique booking ID" },
+        "userId": { "type": "string", "description": "The UID of the user who made the booking" },
+        "destinationId": { "type": "string", "description": "The selected package or country ID" },
+        "destinationName": { "type": "string", "description": "Destination name in English" },
+        "destinationNameAr": { "type": "string", "description": "Destination name in Arabic" },
+        "fullName": { "type": "string", "description": "Name on passport for booking" },
+        "email": { "type": "string", "format": "email", "description": "Contact email" },
+        "passportNumber": { "type": "string", "description": "Contact passport number" },
+        "travelDate": { "type": "string", "description": "Date of departure" },
+        "guests": { "type": "integer", "description": "Number of guests" },
+        "totalCostUSD": { "type": "number", "description": "Total cost calculated in USD" },
+        "currencyPaid": { "type": "string", "description": "Selected currency for payment" },
+        "status": { "type": "string", "enum": ["pending_payment", "completed"], "description": "Status of booking payment" },
+        "timestamp": { "type": "string", "description": "Formatted local booking timestamp" },
+        "createdAt": { "type": "object", "description": "Firestore server timestamp of creation" },
+        "updatedAt": { "type": "object", "description": "Firestore server timestamp of last update" }
+      },
+      "required": ["id", "userId", "destinationId", "destinationName", "fullName", "email", "travelDate", "guests", "totalCostUSD", "currencyPaid", "status"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "Collection of user profiles indexed by Auth UID"
+    },
+    "/bookings/{bookingId}": {
+      "schema": "Booking",
+      "description": "Collection of hotel and flight bookings"
+    }
+  }
+}

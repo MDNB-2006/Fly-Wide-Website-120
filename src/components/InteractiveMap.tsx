@@ -140,6 +140,69 @@ const configContinents: MapTarget[] = [
   }
 ];
 
+const continentPaths = [
+  {
+    name: 'Antarctica',
+    d: 'M 50,470 Q 150,455 250,465 T 450,460 T 650,465 T 850,460 T 950,470 L 950,490 L 50,490 Z'
+  },
+  {
+    name: 'North America',
+    d: 'M 80,110 C 110,90 140,80 180,80 C 210,80 250,60 270,75 C 290,95 320,80 340,90 C 345,110 320,135 290,140 C 295,165 310,185 270,220 C 255,235 230,245 220,270 C 210,295 190,300 185,285 C 195,270 180,260 170,245 C 150,225 130,230 110,210 C 100,190 90,170 80,150 C 75,135 70,120 80,110 Z'
+  },
+  {
+    name: 'Greenland',
+    d: 'M 290,50 Q 320,40 340,55 Q 330,75 310,75 Q 285,65 290,50 Z'
+  },
+  {
+    name: 'South America',
+    d: 'M 220,295 C 240,295 270,310 290,330 C 310,350 330,380 310,410 C 295,430 270,450 250,480 C 240,490 235,490 230,475 C 230,450 215,420 205,395 C 195,370 200,340 210,320 C 215,310 210,300 220,295 Z'
+  },
+  {
+    name: 'Africa',
+    d: 'M 440,220 C 470,210 515,225 530,235 C 540,245 535,260 550,270 C 560,285 580,300 585,315 C 590,330 570,350 565,370 C 550,400 540,430 520,445 C 510,450 500,430 495,410 C 490,380 460,360 445,340 C 430,320 425,290 430,270 C 435,250 425,230 440,220 Z'
+  },
+  {
+    name: 'Madagascar',
+    d: 'M 575,370 Q 590,390 580,415 Q 565,410 570,380 Z'
+  },
+  {
+    name: 'Europe & Asia',
+    d: 'M 445,130 C 455,100 440,80 470,60 C 510,70 540,55 580,60 C 620,50 670,55 725,60 C 785,55 845,60 885,75 C 915,85 930,120 900,140 C 895,150 910,160 875,185 C 850,200 870,220 840,250 C 820,270 790,260 765,245 C 750,235 745,250 720,250 C 700,250 685,270 665,270 C 650,270 645,250 625,245 C 595,240 590,255 570,255 C 560,255 558,235 540,230 C 525,225 520,205 500,200 C 490,195 480,210 470,200 C 460,190 475,170 470,155 C 465,140 435,140 445,130 Z'
+  },
+  {
+    name: 'United Kingdom',
+    d: 'M 410,105 Q 425,95 420,115 T 405,115 Z'
+  },
+  {
+    name: 'Japan',
+    d: 'M 890,115 Q 910,135 885,160 Q 875,145 890,115 Z'
+  },
+  {
+    name: 'India',
+    d: 'M 665,210 Q 695,255 675,275 Q 655,245 665,210 Z'
+  },
+  {
+    name: 'Indochina & Maritime Southeast Asia',
+    d: 'M 765,245 Q 795,285 770,310 T 730,270 Z'
+  },
+  {
+    name: 'Indonesia Islands',
+    d: 'M 740,320 Q 770,325 800,315 M 810,325 Q 840,320 860,335'
+  },
+  {
+    name: 'Australia & Oceania',
+    d: 'M 770,370 C 795,350 820,345 850,345 C 880,345 910,360 900,390 C 890,420 870,440 840,440 C 810,440 780,420 765,400 C 755,385 750,380 770,370 Z'
+  },
+  {
+    name: 'New Zealand North',
+    d: 'M 915,440 Q 930,455 920,465 Z'
+  },
+  {
+    name: 'New Zealand South',
+    d: 'M 905,460 Q 915,475 900,485 Z'
+  }
+];
+
 export default function InteractiveMap({
   onSelectContinent,
   selectedContinent,
@@ -186,6 +249,44 @@ export default function InteractiveMap({
       {/* Main Map Box */}
       <div className="relative bg-gradient-to-b from-sky-300 via-sky-200 to-indigo-100 dark:from-slate-900 dark:via-indigo-950/70 dark:to-slate-950 rounded-3xl p-4 md:p-8 shadow-2xl border-4 border-white/90 dark:border-slate-800/80 overflow-hidden aspect-[16/9] min-h-[350px] md:min-h-[550px] flex flex-col justify-between">
         
+        {/* World Map Outline SVG as Background */}
+        <div className="absolute inset-0 pointer-events-none z-0 opacity-40 dark:opacity-25 select-none transition-opacity duration-300">
+          <svg
+            viewBox="0 0 1000 500"
+            className="w-full h-full"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            {/* Soft Ocean Grids */}
+            <line x1="100" y1="0" x2="100" y2="500" className="stroke-slate-700/[0.03] dark:stroke-sky-300/[0.04]" strokeDasharray="3 3" />
+            <line x1="200" y1="0" x2="200" y2="500" className="stroke-slate-700/[0.03] dark:stroke-sky-300/[0.04]" strokeDasharray="3 3" />
+            <line x1="300" y1="0" x2="300" y2="500" className="stroke-slate-700/[0.03] dark:stroke-sky-300/[0.04]" strokeDasharray="3 3" />
+            <line x1="400" y1="0" x2="400" y2="500" className="stroke-slate-700/[0.03] dark:stroke-sky-300/[0.04]" strokeDasharray="3 3" />
+            <line x1="500" y1="0" x2="500" y2="500" className="stroke-slate-700/[0.03] dark:stroke-sky-300/[0.04]" strokeDasharray="3 3" />
+            <line x1="600" y1="0" x2="600" y2="500" className="stroke-slate-700/[0.03] dark:stroke-sky-300/[0.04]" strokeDasharray="3 3" />
+            <line x1="700" y1="0" x2="700" y2="500" className="stroke-slate-700/[0.03] dark:stroke-sky-300/[0.04]" strokeDasharray="3 3" />
+            <line x1="800" y1="0" x2="800" y2="500" className="stroke-slate-700/[0.03] dark:stroke-sky-300/[0.04]" strokeDasharray="3 3" />
+            <line x1="900" y1="0" x2="900" y2="500" className="stroke-slate-700/[0.03] dark:stroke-sky-300/[0.04]" strokeDasharray="3 3" />
+
+            <line x1="0" y1="100" x2="1000" y2="100" className="stroke-slate-700/[0.03] dark:stroke-sky-300/[0.04]" strokeDasharray="3 3" />
+            <line x1="0" y1="200" x2="1000" y2="200" className="stroke-slate-700/[0.03] dark:stroke-sky-300/[0.04]" strokeDasharray="3 3" />
+            <line x1="0" y1="300" x2="1000" y2="300" className="stroke-slate-700/[0.03] dark:stroke-sky-300/[0.04]" strokeDasharray="3 3" />
+            <line x1="0" y1="400" x2="1000" y2="400" className="stroke-slate-700/[0.03] dark:stroke-sky-300/[0.04]" strokeDasharray="3 3" />
+
+            {/* Continent Outlines */}
+            {continentPaths.map((path, idx) => (
+              <path
+                key={idx}
+                d={path.d}
+                className="stroke-slate-700/20 dark:stroke-sky-450/25 fill-slate-705/[0.03] dark:fill-sky-400/[0.04]"
+                strokeWidth="1.75"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            ))}
+          </svg>
+        </div>
+
         {/* Dynamic Sky Decorations - Kid-friendly floating clouds */}
         <div className="absolute inset-0 pointer-events-none opacity-40">
           <motion.div

@@ -84,6 +84,7 @@ export interface Destination {
 
 export interface Booking {
   id: string;
+  userId?: string;
   destinationId: string;
   destinationName: string;
   destinationNameAr: string;
@@ -107,3 +108,13 @@ export interface Notification {
   timestamp: string;
   type: 'info' | 'warning' | 'success';
 }
+
+export interface UserProfile {
+  uid: string;
+  fullName: string;
+  email: string;
+  passportNumber?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+

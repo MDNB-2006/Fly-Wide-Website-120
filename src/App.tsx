@@ -29,7 +29,8 @@ import {
   Undo,
   X,
   Sun,
-  Moon
+  Moon,
+  ShoppingCart
 } from 'lucide-react';
 
 import {
@@ -55,6 +56,13 @@ import AllDestinations from './components/AllDestinations';
 import FlywPoints from './components/FlywPoints';
 import AboutUs from './components/AboutUs';
 import Extras from './components/Extras';
+import Checkout from './components/Checkout';
+
+import { collection, doc, setDoc, updateDoc, deleteDoc, getDocs, query, where } from 'firebase/firestore';
+import { db, handleFirestoreError, OperationType } from './lib/firebase';
+import { useAuth } from './contexts/AuthContext';
+import AuthModal from './components/AuthModal';
+
 
 // Helper function to dynamically generate a customized vacation package for any of the 120 countries
 const generateCustomPackageForCountry = (countryName: string, lang: 'en' | 'ar'): Destination => {
@@ -110,6 +118,9 @@ const generateCustomPackageForCountry = (countryName: string, lang: 'en' | 'ar')
 };
 
 export default function App() {
+  const { user, profile, isDemoUser, logout } = useAuth();
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  
   const [lang, setLang] = useState<Language>('en');
   const [currency, setCurrency] = useState<CurrencyCode>('USD');
   const [theme, setTheme] = useState<'light' | 'dark'>(() => {
@@ -140,7 +151,7 @@ export default function App() {
     }
   }, [theme]);
 
-  const [activeTab, setActiveTab] = useState<'explore' | 'packages' | 'all-destinations' | 'flyw-points' | 'extras' | 'my-bookings' | 'about-us'>('explore');
+  const [activeTab, setActiveTab] = useState<'explore' | 'packages' | 'all-destinations' | 'flyw-points' | 'extras' | 'my-bookings' | 'about-us' | 'checkout'>('explore');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedContinent, setSelectedContinent] = useState('');
   
@@ -198,6 +209,92 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem('fly_wide_bookings', JSON.stringify(bookings));
   }, [bookings]);
+
+  // Load and sync bookings from Firebase if logged in
+  useEffect(() => {
+    const fetchCloudBookings = async () => {
+      const uid = profile?.uid || user?.uid;
+      if (!uid) return;
+
+      try {
+        const bookingsRef = collection(db, 'bookings');
+        const q = query(bookingsRef, where('userId', '==', uid));
+        const querySnapshot = await getDocs(q);
+        
+        const cloudBookings: Booking[] = [];
+        querySnapshot.forEach((doc) => {
+          cloudBookings.push(doc.data() as Booking);
+        });
+
+        // If local entries exist, merge and upload them to Firestore, then refresh
+        const localUnsaved = bookings.filter(b => !cloudBookings.some(cb => cb.id === b.id));
+        if (localUnsaved.length > 0) {
+          const batchPromises = localUnsaved.map(async (bk) => {
+            const uploadedBk = { ...bk, userId: uid };
+            await setDoc(doc(db, 'bookings', bk.id), uploadedBk);
+            return uploadedBk;
+          });
+          const uploaded = await Promise.all(batchPromises);
+          
+          // Combine both newly uploaded bookings and existing cloud bookings
+          const combined = [...uploaded];
+          cloudBookings.forEach(cb => {
+            if (!combined.some(c => c.id === cb.id)) {
+              combined.push(cb);
+            }
+          });
+          setBookings(combined);
+          
+          // Show positive notification
+          const count = localUnsaved.length;
+          const syncNotif: Notification = {
+            id: `notif-sync-${Date.now()}`,
+            title: lang === 'ar' ? 'تمت مزامنة الحجوزات السابقة ☁️' : 'Past Bookings Synced! ☁️',
+            titleAr: 'تمت مزامنة الحجوزات السابقة ☁️',
+            message: lang === 'ar' 
+              ? `تم ربط ${count} حجز محلي بحسابك في السحابة فايربيز بنجاح!` 
+              : `Uploaded ${count} unsaved booking(s) to your permanent Firebase database profile!`,
+            messageAr: `تم ربط ${count} حجز محلي بحسابك في السحابة فايربيز بنجاح!`,
+            timestamp: 'Just now',
+            type: 'success'
+          };
+          setNotifications(prev => [syncNotif, ...prev]);
+        } else {
+          setBookings(cloudBookings);
+        }
+      } catch (err) {
+        console.error("Failed to load/sync bookings from Firestore:", err);
+      }
+    };
+
+    if (profile || user) {
+      fetchCloudBookings();
+    }
+  }, [profile, user]);
+
+  // Handle restoring local storage cache when logging out
+  useEffect(() => {
+    if (!profile && !user) {
+      try {
+        const saved = localStorage.getItem('fly_wide_bookings');
+        setBookings(saved ? JSON.parse(saved) : []);
+      } catch {
+        setBookings([]);
+      }
+    }
+  }, [profile, user]);
+
+  // Auto-fill booking form details when user profile is verified and active
+  useEffect(() => {
+    if (bookingDestination) {
+      setFormData(prev => ({
+        ...prev,
+        fullName: profile?.fullName || user?.displayName || prev.fullName,
+        email: profile?.email || user?.email || prev.email,
+        passportNumber: profile?.passportNumber || prev.passportNumber || '',
+      }));
+    }
+  }, [bookingDestination, profile, user]);
 
   // Inject a simulated real-time push alert after 16 seconds to demonstrate notification capabilities
   useEffect(() => {
@@ -308,55 +405,24 @@ export default function App() {
     }
   };
 
-  const handleBookingSubmit = (e: React.FormEvent) => {
+  const handleBookingSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!bookingDestination) return;
 
-    const priceCode = currencies[currency] || currencies.USD;
-    const finalUSD = bookingDestination.priceUSD * formData.guests;
-
-    const newBooking: Booking = {
-      id: `FW-${Math.random().toString(36).substring(2, 8).toUpperCase()}`,
-      destinationId: bookingDestination.id,
-      destinationName: bookingDestination.name,
-      destinationNameAr: bookingDestination.nameAr,
-      fullName: formData.fullName,
-      email: formData.email,
-      passportNumber: formData.passportNumber,
-      travelDate: formData.travelDate,
-      guests: formData.guests,
-      totalCostUSD: finalUSD,
-      currencyPaid: currency,
-      status: 'pending_payment',
-      timestamp: new Date().toLocaleString()
-    };
-
-    setBookings(prev => [newBooking, ...prev]);
-    setActivePaymentBooking(newBooking);
-
-    // Add notification
-    const alertMsgEn = `Booking created for ${bookingDestination.name}. Complete payment to issue boarding pass.`;
-    const alertMsgAr = `تم تجهيز طلب حجز لـ ${bookingDestination.nameAr}. أتمم عملية السداد لإصدار بطاقة الصعود المعتمدة.`;
-    
-    const notif: Notification = {
-      id: `notif-${Date.now()}`,
-      title: lang === 'ar' ? 'رحلة بانتظار السداد 💳' : 'Holiday Booked - Pending Pay 💳',
-      titleAr: 'رحلة بانتظار السداد 💳',
-      message: lang === 'ar' ? alertMsgAr : alertMsgEn,
-      messageAr: alertMsgAr,
-      timestamp: 'Just now',
-      type: 'info'
-    };
-    setNotifications(prev => [notif, ...prev]);
-    playNotificationChime();
-
-    // Close booking drawer
-    setBookingDestination(null);
-    // Go to bookings screen
-    setActiveTab('my-bookings');
+    // Direct transition to the advanced multi-gateway Checkout tab with all current passenger entries synchronized!
+    setActiveTab('checkout');
   };
 
-  const handlePaymentSuccess = (bookingId: string) => {
+  const handlePaymentSuccess = async (bookingId: string) => {
+    const uid = profile?.uid || user?.uid;
+    if (uid) {
+      try {
+        await updateDoc(doc(db, 'bookings', bookingId), { status: 'completed' });
+      } catch (err) {
+        console.error("error updating booking status on firestore:", err);
+      }
+    }
+
     setBookings(prev => prev.map(b => {
       if (b.id === bookingId) {
         return { ...b, status: 'completed' as const };
@@ -389,7 +455,16 @@ export default function App() {
     playNotificationChime();
   };
 
-  const handleCancelBooking = (id: string) => {
+  const handleCancelBooking = async (id: string) => {
+    const uid = profile?.uid || user?.uid;
+    if (uid) {
+      try {
+        await deleteDoc(doc(db, 'bookings', id));
+      } catch (err) {
+        console.error("error deleting booking on firestore:", err);
+      }
+    }
+
     setBookings(prev => prev.filter(b => b.id !== id));
     if (activePaymentBooking?.id === id) {
       setActivePaymentBooking(null);
@@ -560,12 +635,58 @@ export default function App() {
                 </span>
               </button>
             </div>
+
+            {/* Premium Checkout & Cart badge */}
+            <button
+              onClick={() => { setActiveTab('checkout'); setActivePaymentBooking(null); }}
+              className={`p-2.5 rounded-full flex items-center justify-center relative border transition-all duration-300 cursor-pointer ${
+                activeTab === 'checkout'
+                  ? 'bg-indigo-50 border-indigo-200 dark:bg-slate-900 dark:border-slate-800 text-sky-500 font-extrabold'
+                  : 'bg-white dark:bg-slate-900 border-slate-200/50 dark:border-slate-800 text-slate-400 hover:text-sky-500'
+              }`}
+              title={lang === 'ar' ? 'العربة وحساب السداد' : 'Cart & Checkout'}
+              id="header-cart-btn-desktop"
+            >
+              <ShoppingCart className="w-4 h-4" />
+              {bookingDestination && (
+                <span className="absolute -top-1.5 -right-1.5 w-4.5 h-4.5 bg-rose-500 text-white rounded-full text-[9px] font-black flex items-center justify-center animate-bounce">
+                  1
+                </span>
+              )}
+            </button>
+
             <NotificationCenter
               notifications={notifications}
               onDismiss={handleDismissNotification}
               onClearAll={handleClearNotifications}
               lang={lang}
             />
+
+            {/* Secures Register & Check-In Profiles */}
+            {(user || isDemoUser) ? (
+              <button
+                onClick={() => setIsAuthModalOpen(true)}
+                className="py-1.5 px-3 md:px-3.5 rounded-full hover:scale-105 active:scale-95 bg-gradient-to-tr from-sky-400 to-indigo-500 hover:from-sky-500 hover:to-indigo-600 text-white shadow-md font-extrabold text-xs transition duration-300 flex items-center gap-1.5 cursor-pointer"
+                id="navbar-profile-btn"
+                title={lang === 'ar' ? 'الملف الشخصي الآمن' : 'Secured Passenger Profile'}
+              >
+                <div className="w-4.5 h-4.5 rounded-full bg-white/20 flex items-center justify-center text-[10px] font-black uppercase flex-shrink-0">
+                  {(profile?.fullName || user?.email || 'U')[0]}
+                </div>
+                <span className="max-w-[90px] truncate hidden sm:inline-block">
+                  {profile?.fullName || user?.displayName || user?.email?.split('@')[0]}
+                </span>
+              </button>
+            ) : (
+              <button
+                onClick={() => setIsAuthModalOpen(true)}
+                className="py-1.5 px-3 rounded-full hover:scale-105 active:scale-95 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/80 text-slate-700 dark:text-slate-200 font-extrabold text-xs transition duration-300 flex items-center gap-1.5 cursor-pointer shadow-sm"
+                id="navbar-login-btn"
+              >
+                <User className="w-3.5 h-3.5 text-indigo-400" />
+                <span>{isRtl ? 'دخول / تسجيل' : 'Sign In'}</span>
+              </button>
+            )}
           </div>
         </div>
       </header>
@@ -648,6 +769,22 @@ export default function App() {
         >
           <span>🏢</span>
           <span>{isRtl ? 'فرعنا' : 'About Shop'}</span>
+        </button>
+        <button
+          onClick={() => { setActiveTab('checkout'); setActivePaymentBooking(null); }}
+          className={`px-2.5 py-2.5 rounded-xl text-[10px] font-black tracking-tight text-center transition flex flex-col items-center gap-0.5 cursor-pointer min-w-[70px] relative ${
+            activeTab === 'checkout'
+              ? 'bg-white dark:bg-slate-800 text-sky-500 shadow-sm'
+              : 'text-slate-500 dark:text-slate-400'
+          }`}
+        >
+          <span>🛒</span>
+          <span>{isRtl ? 'حساب السداد' : 'Checkout'}</span>
+          {bookingDestination && (
+            <span className="absolute top-1 right-2 w-4.5 h-4.5 bg-rose-500 text-white rounded-full text-[9px] font-black flex items-center justify-center animate-bounce">
+              1
+            </span>
+          )}
         </button>
       </div>
 
@@ -1009,6 +1146,59 @@ export default function App() {
             >
               <AboutUs lang={lang} />
             </motion.div>
+          ) : activeTab === 'checkout' ? (
+
+            /* VIEW: DEDICATED PASSPORT CHECKOUT CART PAGE */
+            <motion.div
+              key="checkout-tab"
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              className="w-full"
+            >
+              <Checkout
+                bookingDestination={bookingDestination}
+                setBookingDestination={setBookingDestination}
+                lang={lang}
+                currencyCode={currency}
+                onBookingComplete={async (newBooking) => {
+                  const uid = profile?.uid || user?.uid;
+                  if (uid) {
+                    newBooking.userId = uid;
+                    try {
+                      await setDoc(doc(db, 'bookings', newBooking.id), newBooking);
+                    } catch (err) {
+                      console.error("error submitting checkout booking to firestore:", err);
+                    }
+                  }
+                  setBookings(prev => [newBooking, ...prev]);
+
+                  const alertMsgEn = `Booking completed successfully for ${newBooking.destinationName}! Enjoy your trip with FLYWIDE!`;
+                  const alertMsgAr = `تم حجز وسداد تذكرة ${newBooking.destinationNameAr} بنجاح! نتمنى لكم رحلة سعيدة وممتعة للغاية مع FLYWIDE.`;
+
+                  const notif: Notification = {
+                    id: `notif-${Date.now()}`,
+                    title: lang === 'ar' ? 'اكتمل السداد بنجاح! 🌴' : 'Checkout Payment Successful! 🌴',
+                    titleAr: 'اكتمل السداد بنجاح! 🌴',
+                    message: lang === 'ar' ? alertMsgAr : alertMsgEn,
+                    messageAr: alertMsgAr,
+                    timestamp: 'Just now',
+                    type: 'success'
+                  };
+                  setNotifications(prev => [notif, ...prev]);
+                }}
+                onSwitchTab={(tab) => {
+                  setActiveTab(tab);
+                  setActivePaymentBooking(null);
+                }}
+                userProfile={profile}
+                initialFullName={formData.fullName}
+                initialEmail={formData.email}
+                initialPassportNumber={formData.passportNumber}
+                initialTravelDate={formData.travelDate}
+                initialGuests={formData.guests}
+              />
+            </motion.div>
           ) : (
             
             /* VIEW 3: MY COMPARED TRIP BOARDINGS & RECEIPTS */
@@ -1131,7 +1321,7 @@ export default function App() {
 
       {/* ACTIVE MODAL: BOOKING DRAWER FORM CODES */}
       <AnimatePresence>
-        {bookingDestination && (
+        {bookingDestination && activeTab !== 'checkout' && (
           <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4">
             
             {/* Backdrop layer */}
@@ -1278,19 +1468,33 @@ export default function App() {
                     >
                       -
                     </button>
+
+                    {/* Direct Numeric Input */}
+                    <input
+                      type="number"
+                      min={1}
+                      max={1000}
+                      value={formData.guests}
+                      onChange={(e) => {
+                        const val = parseInt(e.target.value);
+                        setFormData(prev => ({ ...prev, guests: isNaN(val) ? 1 : Math.min(1000, Math.max(1, val)) }));
+                      }}
+                      className="w-16 text-center py-2.5 rounded-xl border border-slate-200 dark:border-slate-850 bg-slate-50 dark:bg-slate-950 font-black text-xs text-slate-900 dark:text-white outline-none focus:border-sky-500 select-all"
+                    />
+
                     {/* Progress Slider */}
                     <input
                       type="range"
                       min={1}
-                      max={10}
-                      value={formData.guests}
+                      max={150}
+                      value={formData.guests > 150 ? 150 : formData.guests}
                       onChange={(e) => setFormData(prev => ({ ...prev, guests: parseInt(e.target.value) || 1 }))}
                       className="flex-1 accent-sky-500 h-2.5 bg-slate-100 dark:bg-slate-800 rounded-lg cursor-pointer"
                     />
                     <button
                       type="button"
-                      disabled={formData.guests >= 10}
-                      onClick={() => setFormData(prev => ({ ...prev, guests: Math.min(10, prev.guests + 1) }))}
+                      disabled={formData.guests >= 1000}
+                      onClick={() => setFormData(prev => ({ ...prev, guests: Math.min(1000, prev.guests + 1) }))}
                       className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 font-black text-lg flex items-center justify-center hover:bg-slate-200 hover:text-sky-500 disabled:opacity-40 transition-colors cursor-pointer"
                     >
                       +
@@ -1319,7 +1523,7 @@ export default function App() {
                     type="submit"
                     className="w-full py-3 rounded-full bg-gradient-to-r from-sky-400 to-indigo-500 hover:from-sky-500 hover:to-indigo-600 font-black text-white text-xs tracking-wider shadow-lg flex items-center justify-center gap-1.5 cursor-pointer"
                   >
-                    <span>{t.bookNow}</span>
+                    <span>{isRtl ? 'المتابعة لإتمام الدفع 🛒' : 'Proceed to Checkout 🛒'}</span>
                     <ArrowRight className="w-4 h-4" />
                   </button>
                 </div>
@@ -1355,6 +1559,17 @@ export default function App() {
           </div>
         </div>
       </footer>
+
+      {/* Auth and Passenger profile modal */}
+      <AnimatePresence>
+        {isAuthModalOpen && (
+          <AuthModal
+            isOpen={isAuthModalOpen}
+            onClose={() => setIsAuthModalOpen(false)}
+            lang={lang}
+          />
+        )}
+      </AnimatePresence>
 
     </div>
   );

@@ -280,13 +280,21 @@ export default function AllDestinations({
                 >
                   <Minus className="w-3.5 h-3.5" />
                 </button>
-                <span className="font-mono text-xs font-extrabold text-slate-900 dark:text-white min-w-[12px] text-center">
-                  {adults}
-                </span>
+                <input
+                  type="number"
+                  min={1}
+                  max={500}
+                  value={adults}
+                  onChange={(e) => {
+                    const val = parseInt(e.target.value);
+                    setAdults(isNaN(val) ? 1 : Math.min(500, Math.max(1, val)));
+                  }}
+                  className="w-12 text-center py-0.5 rounded border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-black text-slate-900 dark:text-white outline-none focus:border-sky-500 select-all"
+                />
                 <button
                   type="button"
-                  disabled={adults >= 10}
-                  onClick={() => setAdults(prev => Math.min(10, prev + 1))}
+                  disabled={adults >= 500}
+                  onClick={() => setAdults(prev => Math.min(500, prev + 1))}
                   className="w-7 h-7 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-lg flex items-center justify-center border border-slate-200 dark:border-slate-700 hover:border-sky-500 hover:text-sky-500 transition disabled:opacity-40 cursor-pointer"
                 >
                   <Plus className="w-3.5 h-3.5" />
@@ -313,13 +321,21 @@ export default function AllDestinations({
                 >
                   <Minus className="w-3.5 h-3.5" />
                 </button>
-                <span className="font-mono text-xs font-extrabold text-slate-900 dark:text-white min-w-[12px] text-center">
-                  {childrenCount}
-                </span>
+                <input
+                  type="number"
+                  min={0}
+                  max={500}
+                  value={childrenCount}
+                  onChange={(e) => {
+                    const val = parseInt(e.target.value);
+                    setChildrenCount(isNaN(val) ? 0 : Math.min(500, Math.max(0, val)));
+                  }}
+                  className="w-12 text-center py-0.5 rounded border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-black text-slate-900 dark:text-white outline-none focus:border-sky-500 select-all"
+                />
                 <button
                   type="button"
-                  disabled={childrenCount >= 10}
-                  onClick={() => setChildrenCount(prev => Math.min(10, prev + 1))}
+                  disabled={childrenCount >= 500}
+                  onClick={() => setChildrenCount(prev => Math.min(500, prev + 1))}
                   className="w-7 h-7 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-lg flex items-center justify-center border border-slate-200 dark:border-slate-700 hover:border-sky-500 hover:text-sky-500 transition disabled:opacity-40 cursor-pointer"
                 >
                   <Plus className="w-3.5 h-3.5" />

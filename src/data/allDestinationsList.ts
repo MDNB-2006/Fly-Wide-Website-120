@@ -173,17 +173,20 @@ const countryImageOverrides: Record<string, string> = {
   "Slovakia": "/src/assets/images/regenerated_image_1780066791866.jpg",
   "Slovenia": "/src/assets/images/regenerated_image_1780066790744.jpg",
 
-  "United Kingdom": "https://images.unsplash.com/photo-1513635269975-59663e0ca1ad?auto=format&fit=crop&w=800&q=80", // Big Ben
+  "United Kingdom": "/src/assets/images/regenerated_image_1780070113180.jpg",
   "Egypt": "https://images.unsplash.com/photo-1539650116574-8efeb43e2750?auto=format&fit=crop&w=800&q=80", // Pyramids
   "United Arab Emirates": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=800&q=80", // Dubai
-  "United States": "https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?auto=format&fit=crop&w=800&q=80", // NYC Liberty
+  "United States": "/src/assets/images/regenerated_image_1780070112410.jpg",
   "Italy": "https://images.unsplash.com/photo-1529260839196-3d51211b029a?auto=format&fit=crop&w=800&q=80", // Colosseum
   "Spain": "https://images.unsplash.com/photo-1543783207-ec64e4d95325?auto=format&fit=crop&w=800&q=80", // Barcelona
   "Switzerland": "https://images.unsplash.com/photo-1502784444187-359ac186c5bb?auto=format&fit=crop&w=800&q=80", // Alps
   "Vatican City": "/src/assets/images/regenerated_image_1780069619575.jpg",
   "Vietnam": "/src/assets/images/regenerated_image_1780069618704.webp",
   "Zambia": "/src/assets/images/regenerated_image_1780069617902.jpg",
-  "Zimbabwe": "/src/assets/images/regenerated_image_1780069615975.jpg"
+  "Zimbabwe": "/src/assets/images/regenerated_image_1780069615975.jpg",
+  "Uzbekistan": "/src/assets/images/regenerated_image_1780070111571.jpg",
+  "Vanuatu": "/src/assets/images/regenerated_image_1780070110716.jpg",
+  "Turkey": "/src/assets/images/regenerated_image_1780070113729.jpg"
 };
 
 // Curated landmarks mapping for regional generators
