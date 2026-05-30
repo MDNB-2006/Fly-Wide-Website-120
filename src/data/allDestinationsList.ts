@@ -340,7 +340,12 @@ export const all120Destinations: ExtraDestination[] = globalSupportedCountries.m
   }
 
   // Check custom Overwrite
-  const imageUrl = countryImageOverrides[countryEn] || unsplashImages[assets.type];
+  let imageUrl = countryImageOverrides[countryEn] || unsplashImages[assets.type];
+
+  if (imageUrl && imageUrl.startsWith('/src/assets/')) {
+    const relativePart = imageUrl.replace(/^\/src\/assets\//, 'assets/');
+    imageUrl = `${(import.meta as any).env.BASE_URL || '/'}${relativePart}`;
+  }
 
   return {
     id,

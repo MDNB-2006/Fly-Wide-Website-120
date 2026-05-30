@@ -507,8 +507,8 @@ export default function App() {
             </div>
           </div>
 
-          {/* Desktop Navigation Page Tabs — single centered row, responsive spacing */}
-          <nav className="hidden lg:flex items-center p-1.5 bg-slate-100/95 dark:bg-slate-900/95 rounded-full border border-slate-200/50 dark:border-slate-800 shadow-inner gap-1 max-w-full flex-shrink flex-1 justify-center overflow-x-auto">
+          {/* Desktop Navigation Page Tabs (Perfect spacing & centering, guaranteed single-line fit) */}
+          <nav className="hidden lg:flex items-center p-1 bg-slate-100/95 dark:bg-slate-900/95 rounded-full border border-slate-200/50 dark:border-slate-800 shadow-inner gap-0.5 xl:gap-1 max-w-full flex-shrink">
             <button
               onClick={() => { setActiveTab('explore'); setActivePaymentBooking(null); }}
               className={`px-3 xl:px-4.5 py-1.5 rounded-full text-[11px] xl:text-[13px] font-bold transition-all duration-300 flex items-center gap-1 xl:gap-1.5 cursor-pointer whitespace-nowrap ${
@@ -706,7 +706,7 @@ export default function App() {
           }`}
         >
           <span>🌏</span>
-          <span>{isRtl ? 'الوجهات' : 'All Destinations'}</span>
+          <span>{isRtl ? 'الـ ١٢٠ بلد' : 'All 120'}</span>
         </button>
         <button
           onClick={() => { setActiveTab('flyw-points'); setActivePaymentBooking(null); }}
