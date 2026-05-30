@@ -5,6 +5,7 @@ import {defineConfig} from 'vite';
 
 export default defineConfig(() => {
   return {
+    base: '/Fly-Wide-Website-Global/',
     plugins: [react(), tailwindcss()],
     resolve: {
       alias: {

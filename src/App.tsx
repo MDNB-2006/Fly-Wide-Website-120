@@ -484,44 +484,48 @@ export default function App() {
       className={`min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-sans transition-colors duration-300 pb-12`}
     >
       
-      {/* Sticky Premium Navbar (Apple style layout) */}
-      <header className="sticky top-0 z-40 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md border-b border-slate-200/40 dark:border-slate-800/80 shadow-sm transition-all duration-300">
-        <div className="w-full max-w-[1536px] xl:max-w-[1720px] mx-auto px-4 sm:px-6 lg:px-10 py-4.5 md:py-5 flex items-center justify-between gap-4 lg:gap-8 xl:gap-12">
+      {/* Sticky Premium Navbar (Centered Spacing & Anti-Overlapping Single Level Layout) */}
+      <header className="sticky top-0 z-40 bg-white/95 dark:bg-slate-950/95 backdrop-blur-md border-b border-slate-200/40 dark:border-slate-800/80 shadow-sm transition-all duration-300">
+        <div className="w-full max-w-[1536px] xl:max-w-[1720px] mx-auto px-3 sm:px-4 lg:px-6 py-2.5 md:py-3.5 flex items-center justify-between gap-3 xl:gap-8">
           
           {/* Logo & Brand text */}
-          <div className="flex items-center gap-3.5 md:gap-4 flex-shrink-0 whitespace-nowrap pr-2 lg:pr-4" id="top-branding-logo">
-            <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-tr from-sky-400 via-indigo-500 to-indigo-600 flex items-center justify-center text-white shadow-md transform hover:rotate-12 transition-transform duration-300 cursor-pointer flex-shrink-0">
-              <Plane className="w-5.5 h-5.5 md:w-6 md:h-6 transform rotate-45" />
+          <div 
+            className="flex items-center gap-3 md:gap-4 flex-shrink-0 cursor-pointer" 
+            id="top-branding-logo"
+            onClick={() => { setActiveTab('explore'); setActivePaymentBooking(null); }}
+          >
+            <div className="w-9 h-9 md:w-11 md:h-11 rounded-full bg-gradient-to-tr from-sky-400 via-indigo-500 to-indigo-600 flex items-center justify-center text-white shadow-md transform hover:rotate-12 transition-transform duration-300 flex-shrink-0">
+              <Plane className="w-5 h-5 md:w-5.5 md:h-5.5 transform rotate-45" />
             </div>
-            <div className="flex flex-col items-start leading-none gap-1.5 animate-fade-in">
-              <span className="font-extrabold text-xl md:text-2xl tracking-tight bg-gradient-to-r from-sky-500 via-indigo-500 to-purple-600 bg-clip-text text-transparent">
+            <div className="flex flex-col items-start leading-none gap-0.5 md:gap-1 animate-fade-in">
+              <span className="font-extrabold text-base md:text-xl tracking-tight bg-gradient-to-r from-sky-500 via-indigo-500 to-purple-600 bg-clip-text text-transparent">
                 FLY-WIDE
               </span>
-              <span className="text-[9px] md:text-[10px] uppercase font-black text-indigo-400 dark:text-indigo-400 tracking-widest leading-none">
+              <span className="text-[8px] md:text-[9px] uppercase font-black text-indigo-400 dark:text-indigo-400 tracking-widest leading-none">
                 {isRtl ? 'للسياحة والسفر السعيد' : 'HAPPY TRAVELS'}
               </span>
             </div>
           </div>
 
-          {/* Navigation tabs link (Multipage feel) */}
-          <nav className="hidden lg:flex items-center p-1.5 bg-slate-100 dark:bg-slate-800 rounded-full border border-slate-200/50 shadow-inner max-w-full gap-1.5 mx-2 lg:mx-4 xl:mx-8 flex-shrink">
+          {/* Desktop Navigation Page Tabs (Perfect spacing & centering, guaranteed single-line fit) */}
+          <nav className="hidden lg:flex items-center p-1 bg-slate-100/95 dark:bg-slate-900/95 rounded-full border border-slate-200/50 dark:border-slate-800 shadow-inner gap-0.5 xl:gap-1 max-w-full flex-shrink">
             <button
               onClick={() => { setActiveTab('explore'); setActivePaymentBooking(null); }}
-              className={`px-3 xl:px-4.5 py-2 rounded-full text-xs xl:text-[13px] font-bold transition-all duration-300 flex items-center gap-1.5 cursor-pointer whitespace-nowrap ${
+              className={`px-3 xl:px-4.5 py-1.5 rounded-full text-[11px] xl:text-[13px] font-bold transition-all duration-300 flex items-center gap-1 xl:gap-1.5 cursor-pointer whitespace-nowrap ${
                 activeTab === 'explore'
-                  ? 'bg-white dark:bg-slate-900 border border-slate-200/10 shadow text-sky-500 font-extrabold px-4.5 xl:px-5.5'
-                  : 'text-slate-500 dark:text-slate-300 hover:text-sky-500 hover:bg-white/40 dark:hover:bg-slate-900/40'
+                  ? 'bg-white dark:bg-slate-950 border border-slate-200/10 shadow text-sky-500 font-extrabold px-4.5 xl:px-5.5'
+                  : 'text-slate-500 dark:text-slate-300 hover:text-sky-500 hover:bg-white/40 dark:hover:bg-slate-900/45'
               }`}
             >
               <span>🗺️</span>
-              <span>{isRtl ? 'الاستكشاف' : 'Explore Map'}</span>
+              <span>{isRtl ? 'الاستكشاف' : 'Explore'}</span>
             </button>
             <button
               onClick={() => { setActiveTab('packages'); setActivePaymentBooking(null); }}
-              className={`px-3 xl:px-4.5 py-2 rounded-full text-xs xl:text-[13px] font-bold transition-all duration-300 flex items-center gap-1.5 cursor-pointer whitespace-nowrap ${
+              className={`px-3 xl:px-4.5 py-1.5 rounded-full text-[11px] xl:text-[13px] font-bold transition-all duration-300 flex items-center gap-1 xl:gap-1.5 cursor-pointer whitespace-nowrap ${
                 activeTab === 'packages'
-                  ? 'bg-white dark:bg-slate-900 border border-slate-200/10 shadow text-sky-500 font-extrabold px-4.5 xl:px-5.5'
-                  : 'text-slate-500 dark:text-slate-300 hover:text-sky-500 hover:bg-white/40 dark:hover:bg-slate-900/40'
+                  ? 'bg-white dark:bg-slate-950 border border-slate-200/10 shadow text-sky-500 font-extrabold px-4.5 xl:px-5.5'
+                  : 'text-slate-500 dark:text-slate-300 hover:text-sky-500 hover:bg-white/40 dark:hover:bg-slate-900/45'
               }`}
             >
               <span>🎒</span>
@@ -529,67 +533,67 @@ export default function App() {
             </button>
             <button
               onClick={() => { setActiveTab('all-destinations'); setActivePaymentBooking(null); }}
-              className={`px-3 xl:px-4.5 py-2 rounded-full text-xs xl:text-[13px] font-bold transition-all duration-300 flex items-center gap-1.5 cursor-pointer whitespace-nowrap ${
+              className={`px-3 xl:px-4.5 py-1.5 rounded-full text-[11px] xl:text-[13px] font-bold transition-all duration-300 flex items-center gap-1 xl:gap-1.5 cursor-pointer whitespace-nowrap ${
                 activeTab === 'all-destinations'
-                  ? 'bg-white dark:bg-slate-900 border border-slate-200/10 shadow text-sky-500 font-extrabold px-4.5 xl:px-5.5'
-                  : 'text-slate-500 dark:text-slate-300 hover:text-sky-500 hover:bg-white/40 dark:hover:bg-slate-900/40'
+                  ? 'bg-white dark:bg-slate-950 border border-slate-200/10 shadow text-sky-500 font-extrabold px-4.5 xl:px-5.5'
+                  : 'text-slate-500 dark:text-slate-300 hover:text-sky-500 hover:bg-white/40 dark:hover:bg-slate-900/45'
               }`}
             >
               <span>🌏</span>
-              <span>{isRtl ? 'جميع الوجهات الـ ١٢٠' : 'All 120 Destinations'}</span>
+              <span>{isRtl ? 'الوجهات' : 'All Destinations'}</span>
             </button>
             <button
               onClick={() => { setActiveTab('flyw-points'); setActivePaymentBooking(null); }}
-              className={`px-3 xl:px-4.5 py-2 rounded-full text-xs xl:text-[13px] font-bold transition-all duration-300 flex items-center gap-1.5 cursor-pointer whitespace-nowrap ${
+              className={`px-3 xl:px-4.5 py-1.5 rounded-full text-[11px] xl:text-[13px] font-bold transition-all duration-300 flex items-center gap-1 xl:gap-1.5 cursor-pointer whitespace-nowrap ${
                 activeTab === 'flyw-points'
-                  ? 'bg-white dark:bg-slate-900 border border-slate-200/10 shadow text-sky-500 font-extrabold px-4.5 xl:px-5.5'
-                  : 'text-slate-500 dark:text-slate-300 hover:text-sky-500 hover:bg-white/40 dark:hover:bg-slate-900/40'
+                  ? 'bg-white dark:bg-slate-950 border border-slate-200/10 shadow text-sky-500 font-extrabold px-4.5 xl:px-5.5'
+                  : 'text-slate-500 dark:text-slate-300 hover:text-sky-500 hover:bg-white/40 dark:hover:bg-slate-900/45'
               }`}
             >
               <span>🌟</span>
-              <span>{isRtl ? 'مكافآت فلايو' : 'Flyw Points'}</span>
+              <span>{isRtl ? 'نقاط مكافآت' : 'Flyw Points'}</span>
             </button>
             <button
               onClick={() => { setActiveTab('extras'); setActivePaymentBooking(null); }}
-              className={`px-3 xl:px-4.5 py-2 rounded-full text-xs xl:text-[13px] font-bold transition-all duration-300 flex items-center gap-1.5 cursor-pointer relative whitespace-nowrap ${
+              className={`px-3 xl:px-4.5 py-1.5 rounded-full text-[11px] xl:text-[13px] font-bold transition-all duration-300 flex items-center gap-1 xl:gap-1.5 cursor-pointer relative whitespace-nowrap ${
                 activeTab === 'extras'
-                  ? 'bg-white dark:bg-slate-900 border border-slate-200/10 shadow text-sky-500 font-extrabold px-4.5 xl:px-5.5'
-                  : 'text-slate-500 dark:text-slate-300 hover:text-sky-500 hover:bg-white/40 dark:hover:bg-slate-900/40'
+                  ? 'bg-white dark:bg-slate-950 border border-slate-200/10 shadow text-sky-500 font-extrabold px-4.5 xl:px-5.5'
+                  : 'text-slate-500 dark:text-slate-300 hover:text-sky-500 hover:bg-white/40 dark:hover:bg-slate-900/45'
               }`}
             >
               <span>🏷️</span>
-              <span>{isRtl ? 'المزايا والإضافات' : 'Extras 10% Off'}</span>
+              <span>{isRtl ? 'المزايا' : 'Extras'}</span>
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 absolute -top-0.5 -right-0.5 animate-ping" />
             </button>
             <button
               onClick={() => { setActiveTab('my-bookings'); }}
-              className={`px-3 xl:px-4.5 py-2 rounded-full text-xs xl:text-[13px] font-bold transition-all duration-300 flex items-center gap-1.5 cursor-pointer relative whitespace-nowrap ${
+              className={`px-3 xl:px-4.5 py-1.5 rounded-full text-[11px] xl:text-[13px] font-bold transition-all duration-300 flex items-center gap-1 xl:gap-1.5 cursor-pointer relative whitespace-nowrap ${
                 activeTab === 'my-bookings'
-                  ? 'bg-white dark:bg-slate-900 border border-slate-200/10 shadow text-sky-500 font-extrabold px-4.5 xl:px-5.5'
-                  : 'text-slate-500 dark:text-slate-300 hover:text-sky-500 hover:bg-white/40 dark:hover:bg-slate-900/40'
+                  ? 'bg-white dark:bg-slate-950 border border-slate-200/10 shadow text-sky-500 font-extrabold px-4.5 xl:px-5.5'
+                  : 'text-slate-500 dark:text-slate-300 hover:text-sky-500 hover:bg-white/40 dark:hover:bg-slate-900/45'
               }`}
             >
               <span>📋</span>
-              <span>{isRtl ? 'رحلاتي وحجوزاتي' : 'My Bookings History'}</span>
+              <span>{isRtl ? 'حجوزاتي' : 'My Bookings'}</span>
               {bookings.length > 0 && (
                 <span className="w-1.5 h-1.5 rounded-full bg-rose-500 absolute -top-0.5 -right-0.5 animate-ping" />
               )}
             </button>
             <button
               onClick={() => { setActiveTab('about-us'); setActivePaymentBooking(null); }}
-              className={`px-3 xl:px-4.5 py-2 rounded-full text-xs xl:text-[13px] font-bold transition-all duration-300 flex items-center gap-1.5 cursor-pointer whitespace-nowrap ${
+              className={`px-3 xl:px-4.5 py-1.5 rounded-full text-[11px] xl:text-[13px] font-bold transition-all duration-300 flex items-center gap-1 xl:gap-1.5 cursor-pointer whitespace-nowrap ${
                 activeTab === 'about-us'
-                  ? 'bg-white dark:bg-slate-900 border border-slate-200/10 shadow text-sky-500 font-extrabold px-4.5 xl:px-5.5'
-                  : 'text-slate-500 dark:text-slate-300 hover:text-sky-500 hover:bg-white/40 dark:hover:bg-slate-900/40'
+                  ? 'bg-white dark:bg-slate-950 border border-slate-200/10 shadow text-sky-500 font-extrabold px-4.5 xl:px-5.5'
+                  : 'text-slate-500 dark:text-slate-300 hover:text-sky-500 hover:bg-white/40 dark:hover:bg-slate-900/45'
               }`}
             >
               <span>🏢</span>
-              <span>{isRtl ? 'من نحن وفرعنا' : 'About Us & Shop'}</span>
+              <span>{isRtl ? 'من نحن' : 'About Us'}</span>
             </button>
           </nav>
 
-          {/* Dual-language & Multi-currency controls & Notifications dropdown */}
-          <div className="flex items-center gap-3.5 xl:gap-5 flex-shrink-0 pl-2 lg:pl-4">
+          {/* Dual-language, Multi-currency, Theme, Notifications & User controls (Compact layouts) */}
+          <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-2.5 flex-shrink-0">
             <CurrencySelector
               selectedCurrency={currency}
               onCurrencyChange={setCurrency}
@@ -599,57 +603,35 @@ export default function App() {
               currentLang={lang}
               onLanguageChange={setLang}
             />
-            {/* Custom Theme Switcher (Sun: Light mode, Moon: Dark mode) */}
-            <div className="flex items-center bg-slate-100/90 dark:bg-slate-900/90 p-1 rounded-full border border-slate-200/50 dark:border-slate-800/80 shadow-sm gap-1">
-              <button
-                onClick={() => setTheme('light')}
-                className={`p-1.5 px-2.5 rounded-full flex items-center justify-center gap-1.5 text-xs font-semibold cursor-pointer transition-all duration-300 ${
-                  theme === 'light'
-                    ? 'bg-white text-amber-500 shadow-md font-bold'
-                    : 'text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-amber-400'
-                }`}
-                title={lang === 'ar' ? 'الوضع النهاري (أبيض)' : 'Daylight Mode (White)'}
-                aria-label="Light Mode"
-                id="theme-light-btn"
-              >
-                <Sun className={`w-4 h-4 transition-transform duration-500 ${theme === 'light' ? 'rotate-45' : 'hover:scale-110'}`} />
-                <span className="hidden sm:inline text-[10px] uppercase font-bold tracking-wider">
-                  {lang === 'ar' ? 'أبيض' : 'Light'}
-                </span>
-              </button>
-              
-              <button
-                onClick={() => setTheme('dark')}
-                className={`p-1.5 px-2.5 rounded-full flex items-center justify-center gap-1.5 text-xs font-semibold cursor-pointer transition-all duration-300 ${
-                  theme === 'dark'
-                    ? 'bg-slate-800 text-indigo-400 shadow-md font-bold'
-                    : 'text-slate-400 hover:text-slate-600 dark:text-slate-400 dark:hover:text-indigo-400'
-                }`}
-                title={lang === 'ar' ? 'الوضع الليلي (داكن)' : 'Night Mode (Dark)'}
-                aria-label="Dark Mode"
-                id="theme-dark-btn"
-              >
-                <Moon className={`w-4 h-4 transition-transform duration-500 ${theme === 'dark' ? 'scale-105' : 'hover:-rotate-12'}`} />
-                <span className="hidden sm:inline text-[10px] uppercase font-bold tracking-wider">
-                  {lang === 'ar' ? 'داكن' : 'Dark'}
-                </span>
-              </button>
-            </div>
+            
+            {/* Minimalist 1-Button Theme Toggle to save horizontal space */}
+            <button
+              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+              className="p-2 md:p-2.5 rounded-full flex items-center justify-center border border-slate-200/50 dark:border-slate-800/80 bg-white dark:bg-slate-900 text-slate-400 hover:text-amber-500 dark:hover:text-indigo-400 transition-all duration-300 cursor-pointer shadow-sm"
+              title={lang === 'ar' ? 'تبديل المظهر' : 'Toggle Theme'}
+              id="theme-toggle-btn"
+            >
+              {theme === 'dark' ? (
+                <Sun className="w-3.5 h-3.5 md:w-4 md:h-4 text-amber-500 animate-spin-slow" />
+              ) : (
+                <Moon className="w-3.5 h-3.5 md:w-4 md:h-4 text-indigo-500" />
+              )}
+            </button>
 
             {/* Premium Checkout & Cart badge */}
             <button
               onClick={() => { setActiveTab('checkout'); setActivePaymentBooking(null); }}
-              className={`p-2.5 rounded-full flex items-center justify-center relative border transition-all duration-300 cursor-pointer ${
+              className={`p-2 md:p-2.5 rounded-full flex items-center justify-center relative border transition-all duration-300 cursor-pointer ${
                 activeTab === 'checkout'
-                  ? 'bg-indigo-50 border-indigo-200 dark:bg-slate-900 dark:border-slate-800 text-sky-500 font-extrabold'
+                  ? 'bg-indigo-50 border-indigo-200 dark:bg-slate-900 dark:border-slate-850 text-sky-500 font-extrabold'
                   : 'bg-white dark:bg-slate-900 border-slate-200/50 dark:border-slate-800 text-slate-400 hover:text-sky-500'
               }`}
               title={lang === 'ar' ? 'العربة وحساب السداد' : 'Cart & Checkout'}
               id="header-cart-btn-desktop"
             >
-              <ShoppingCart className="w-4 h-4" />
+              <ShoppingCart className="w-3.5 h-3.5 md:w-4 md:h-4" />
               {bookingDestination && (
-                <span className="absolute -top-1.5 -right-1.5 w-4.5 h-4.5 bg-rose-500 text-white rounded-full text-[9px] font-black flex items-center justify-center animate-bounce">
+                <span className="absolute -top-1 -right-1 w-4 h-4 md:w-4.5 md:h-4.5 bg-rose-500 text-white rounded-full text-[8px] md:text-[9px] font-black flex items-center justify-center animate-bounce">
                   1
                 </span>
               )}
@@ -666,21 +648,21 @@ export default function App() {
             {(user || isDemoUser) ? (
               <button
                 onClick={() => setIsAuthModalOpen(true)}
-                className="py-1.5 px-3 md:px-3.5 rounded-full hover:scale-105 active:scale-95 bg-gradient-to-tr from-sky-400 to-indigo-500 hover:from-sky-500 hover:to-indigo-600 text-white shadow-md font-extrabold text-xs transition duration-300 flex items-center gap-1.5 cursor-pointer"
+                className="py-1.5 px-2.5 md:px-3 rounded-full hover:scale-105 active:scale-95 bg-gradient-to-tr from-sky-400 to-indigo-500 hover:from-sky-500 hover:to-indigo-600 text-white shadow-md font-extrabold text-[11px] md:text-xs transition duration-300 flex items-center gap-1 cursor-pointer flex-shrink-0"
                 id="navbar-profile-btn"
                 title={lang === 'ar' ? 'الملف الشخصي الآمن' : 'Secured Passenger Profile'}
               >
-                <div className="w-4.5 h-4.5 rounded-full bg-white/20 flex items-center justify-center text-[10px] font-black uppercase flex-shrink-0">
+                <div className="w-4 h-4 md:w-4.5 md:h-4.5 rounded-full bg-white/20 flex items-center justify-center text-[9px] md:text-[10px] font-black uppercase flex-shrink-0">
                   {(profile?.fullName || user?.email || 'U')[0]}
                 </div>
-                <span className="max-w-[90px] truncate hidden sm:inline-block">
+                <span className="max-w-[70px] xl:max-w-[90px] truncate hidden sm:inline-block">
                   {profile?.fullName || user?.displayName || user?.email?.split('@')[0]}
                 </span>
               </button>
             ) : (
               <button
                 onClick={() => setIsAuthModalOpen(true)}
-                className="py-1.5 px-3 rounded-full hover:scale-105 active:scale-95 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/80 text-slate-700 dark:text-slate-200 font-extrabold text-xs transition duration-300 flex items-center gap-1.5 cursor-pointer shadow-sm"
+                className="py-1.5 px-2.5 md:px-3.5 rounded-full hover:scale-105 active:scale-95 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/80 text-slate-700 dark:text-slate-200 font-extrabold text-[11px] md:text-xs transition duration-300 flex items-center gap-1 cursor-pointer shadow-sm flex-shrink-0"
                 id="navbar-login-btn"
               >
                 <User className="w-3.5 h-3.5 text-indigo-400" />
