@@ -189,6 +189,29 @@ const countryImageOverrides: Record<string, string> = {
   "Turkey": "/src/assets/images/regenerated_image_1780070113729.jpg"
 };
 
+const resolveLocalImageUrl = (imagePath: string): string => {
+  if (!imagePath) return imagePath;
+  const basePath = ((import.meta as any).env.BASE_URL || '/').replace(/\/$/, '');
+
+  if (imagePath.startsWith('/src/assets/')) {
+    return `${basePath}/assets/${imagePath.slice('/src/assets/'.length)}`;
+  }
+
+  if (imagePath.startsWith('src/assets/')) {
+    return `${basePath}/assets/${imagePath.slice('src/assets/'.length)}`;
+  }
+
+  if (imagePath.startsWith('/assets/')) {
+    return `${basePath}${imagePath}`;
+  }
+
+  if (imagePath.startsWith('assets/')) {
+    return `${basePath}/${imagePath}`;
+  }
+
+  return imagePath;
+};
+
 // Curated landmarks mapping for regional generators
 const landmarkAssets: Record<string, { desc: string, descAr: string, tasksEn: string[], tasksAr: string[], type: 'mountain' | 'beach' | 'city' | 'desert' | 'jungle' }> = {
   Europe: {
@@ -339,13 +362,9 @@ export const all120Destinations: ExtraDestination[] = globalSupportedCountries.m
     nameAr = `أسرار الكثبان الذهبية والقصور في ${countryAr}`;
   }
 
-  // Check custom Overwrite
-  let imageUrl = countryImageOverrides[countryEn] || unsplashImages[assets.type];
-
-  if (imageUrl && imageUrl.startsWith('/src/assets/')) {
-    const relativePart = imageUrl.replace(/^\/src\/assets\//, 'assets/');
-    imageUrl = `${(import.meta as any).env.BASE_URL || '/'}${relativePart}`;
-  }
+  // Check custom Overwrite and resolve assets to the build base path
+  const rawImageUrl = countryImageOverrides[countryEn] || unsplashImages[assets.type];
+  const imageUrl = resolveLocalImageUrl(rawImageUrl);
 
   return {
     id,
